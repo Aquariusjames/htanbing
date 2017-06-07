@@ -49,4 +49,15 @@ git pull origin master
 #push to github repo
 git push -u origin master
 
+#setup git server myRep_bare
+git clone --bare  git@192.168.80.119:/home/git/centoshanbing /home/git/myRep_bare
+
+git clone git@192.168.80.119:/home/git/myRep_bare /tmp/bare
+
+#force fetch all from remote
+git fetch --all
+git reset --hard origin/master
+
+#pro git book
+https://git-scm.com/book/zh/v1
 
