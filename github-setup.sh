@@ -52,7 +52,8 @@ git push -u origin master
 #setup git server myRep_bare
 git clone --bare  git@192.168.80.119:/home/git/centoshanbing /home/git/myRep_bare
 
-git clone git@192.168.80.119:/home/git/myRep_bare /tmp/bare
+git clone git@192.168.80.119:/home/git/myRep_bare ipa_server
+git remote add origin git@192.168.80.119:/home/git/myRep_bare
 
 #force fetch all from remote
 git fetch --all
