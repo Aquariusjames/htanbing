@@ -1,14 +1,14 @@
-github ����¼ �κεص㶼��ͬ�� �ܰ�����Ķ�����������
+github 做记录 任何地点都能同步 能把零碎的东西整理起来
 
-�κζ�����Ҫ�м�¼ ��Ҫͳһ���� ����ܿ�Ͷ���
+任何东西都要有记录 还要统一整理 否则很快就丢了
 
-��������Ҫ�в�� ��ԭʼ���� -> ����-> ����ֻ��һ���ǳ��������ĵ� ���о����Ķ��� �������ж����ļ���Ŀ¼��
+整理东西要有层次 先原始资料 -> 精炼-> 顶层只留一个非常经常查阅的 所有精炼的东西 包括所有东西的检索目录。
 
-1���� Git-2.12.2.2-64-bit.exe
-2ѡ��һ��Ŀ¼ - �Ҽ�ѡ�� - git gui - creat new one - ѡ��һ��Ŀ¼ Ȼ��creat
-3remote add ����һ��github����Ŀ� location д  git@github.com:Aquariusjames/htanbing.git ���������
-4 help - show ssh key - ��key���ӵ�github��վ-����-ssh key ����һ���Ϳ����ˡ�
-5 �����Ժ� �ٴ�git command ��������������Ϳ����ˡ�
+1运行 Git-2.12.2.2-64-bit.exe
+2选择一个目录 - 右键选择 - git gui - creat new one - 选择一个目录 然后creat
+3remote add 添加一个github上面的库 location 写  git@github.com:Aquariusjames/htanbing.git 名字随便起
+4 help - show ssh key - 把key添加到github网站-设置-ssh key 添加一个就可以了。
+5 好了以后 再打开git command 用如下命令操作就可以了。
 
 git init
 git add .
@@ -22,12 +22,132 @@ git commit -m"..."
 git pull
 git push origin master
 
-KVM�������⻯�����
-���⻯Ƕ��
+KVM二次虚拟化环境搭建
+虚拟化嵌套
 
-��������ļ�������***.vmx�ļ������� hypervisor.cpuid.v0 = ��FALSE�� vhv.enable = ��TRUE�� 
-�����������---->�߼���,��ѡģʽѡ�� Intel VT-X /ETP AMD-V/RVI ���⻯Intel VT-X /ETP AMD-V/RVI ǰ��� 
+打开虚拟机文件包，在***.vmx文件中添加 hypervisor.cpuid.v0 = “FALSE” vhv.enable = ”TRUE“ 
+在虚拟机设置---->高级中,首选模式选择 Intel VT-X /ETP AMD-V/RVI 虚拟化Intel VT-X /ETP AMD-V/RVI 前面打勾 
 
 egrep '(vmx|svm)' --color=always /proc/cpuinfo
 
-����׼�� ��ipa server���� puppet server �����ĵ����� ��װopenstack
+下来准备 把ipa server做成 puppet server 设置心得主机 安装openstack
+provision
+[root@ipa ~]# grep -v \# /etc/puppet/puppet.conf| sed '/^$/d'
+
+mkdir -p /etc/puppet/manifests
+touch /etc/puppet/manifests/site.pp
+
+
+[root@rhel7 ~]# firewall-cmd --zone=public --add-port=80/tcp --permanent
+[root@rhel7 ~]# firewall-cmd --reload
+[root@rhel7 ~]# iptables-save | grep 80
+[root@rhel7 ~]# systemctl status firewalld
+systemctl status iptables
+systemctl status  firewalld
+yum install firewalld firewall-config
+yum install iptables-servicesfirewall-cmd --get-zone-of-interface=em1
+firewall-cmd --state
+firewall-cmd --get-active-zones
+firewall-cmd --get-zone-of-interface=em1
+firewall-cmd --zone=public --list-interfaces
+firewall-cmd --zone=public --list-all
+firewall-cmd --get-service
+firewall-cmd --get-service --permanent
+firewall-cmd --panic-on
+所有输入和输出的数据包都将被终止。在一段休止状态之后，活动的连接将被终止；花费的时间由单个会话的超时值决定。
+firewall-cmd --panic-off
+firewall-cmd --query-panic
+
+firewalld 的配置储存在 /usr/lib/firewalld/ 和 /etc/firewalld/ 里的各种 XML 文件里，这样保持了这些文件被编辑、写入、备份的极大的灵活性，使之可作为其他安装的备份等等。
+以 root 身份输入以下命令，重新加载防火墙，并不中断用户连接，即不丢失状态信息：
+firewall-cmd --reload
+以 root 身份输入以下信息，重新加载防火墙并中断用户连接，即丢弃状态信息：
+~]# firewall-cmd --complete-reload
+firewall-cmd --zone=public --add-interface=em1
+增加 --permanent 选项并重新加载防火墙，使之成为永久性设置。
+ /etc/firewalld/firewalld.conf
+ firewall-cmd --set-default-zone=public
+ firewall-cmd --zone=dmz --add-port=8080/tcp
+ firewall-cmd --zone=public --add-port=5060-5061/udp
+ firewall-cmd --zone=work --add-service=smtp
+ firewall-cmd --zone=work --remove-service=smtp
+  ls /usr/lib/firewalld/zones/
+  firewall-cmd --zone=external --query-masquerade
+  firewall-cmd --zone=external --add-masquerade
+  firewall-cmd --zone=external --add-forward-port=port=22:proto=tcp:toport=3753
+  ~]# firewall-cmd --zone=external /
+      --add-forward-port=port=22:proto=tcp:toport=2055:toaddr=192.0.2.55
+   使用直接接口
+   直接端口模式适用于服务或者程序，以便在运行时间内增加特定的防火墙规则。这些规则不是永久性的，它们需要在每次通过 D-BU S从 firewalld 接到启动、重新启动和重新加载信息后运用。
+   firewall-cmd --direct --remove-rule ipv4 filter IN_public_allow \
+      0 -m tcp -p tcp --dport 666 -j ACCEPT
+    firewall-cmd --direct --get-rules ipv4 filter IN_public_allow
+   
+   通过 “rich language” 语法，可以用比直接接口方式更易理解的方法建立复杂防火墙规则。此外，还能永久保留设置。这种语言使用关键词值，是 iptables 工具的抽象表示。这种语言可以用来配置分区，也仍然支持现行的配置方式。
+  firewall-cmd [--zone=zone] --add-rich-rule='rule' [--timeout 9=seconds] 
+  firewall-cmd [--zone=zone] --query-rich-rule='rule'
+  以 root 身份运行一个编辑器，把以下行增加到 /etc/firewalld/firewalld.conf 文件：
+Lockdown=yes
+启动锁定，以 root 身份输入以下命令：
+~]# firewall-cmd --lockdown-on
+firewall-cmd --list-lockdown-whitelist-commands
+
+https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security_Guide/index.html
+iptables
+system-config-firewall
+/etc/sysconfig/iptables
+iptables -A <chain> -j <target>
+The three built-in chains are INPUT, OUTPUT, and FORWARD. These chains are permanent and cannot be deleted. The chain specifies the point at which a packet is manipulated.
+The -j <target> option specifies the target of the rule; i.e., what to do if the packet matches the rule. Examples of built-in targets are ACCEPT, DROP, and REJECT.
+
+service iptables save
+iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+
+By default, the IPv4 policy in Red Hat Enterprise Linux kernels disables support for IP forwarding. This prevents machines that run Red Hat Enterprise Linux from functioning as dedicated edge routers. To enable IP forwarding, use the following command as the root user:
+~]# sysctl -w net.ipv4.ip_forward=1
+net.ipv4.ip_forward = 1
+/etc/sysctl.conf 
+net.ipv4.ip_forward = 1
+run the following command to enable the change t
+sysctl -p /etc/sysctl.conf
+
+⁠2.8.5.1. Postrouting and IP Masquerading
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+This rule uses the NAT packet matching table (-t nat) and specifies the built-in POSTROUTING chain for NAT (-A POSTROUTING) on the firewall's external networking device (-o eth0).
+
+⁠2.8.5.2. Prerouting
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to 172.31.0.23:80
+iptables -A FORWARD -i eth0 -p tcp --dport 80 -d 172.31.0.23 -j ACCEPT
+
+Every chain has a default policy to ACCEPT, DROP, REJECT, or QUEUE. If none of the rules in the chain apply to the packet, then the packet is dealt with in accordance with the default policy.
+
+Exclamation point character (!) 
+Plus character (+) 
+~]# chown root.root /etc/services
+~]# chmod 0644 /etc/services
+~]# chattr +i /etc/services
+lsmod | grep ipchains
+https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security_Guide/index.html
+  
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
