@@ -30,6 +30,7 @@ git init
 #setup configration 
 git config --global user.name "james.han6"
 git config --global user.email 1366054376@qq.com
+git config --global color.ui true
 
 git remote add origin git@github.com:Aquariusjames/openstack.git
 
